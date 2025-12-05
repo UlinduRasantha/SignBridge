@@ -23,8 +23,8 @@ class _TextToSignTranslateState extends State<TextToSignTranslate> {
     'ස්තුතියි': 'assets/video/thank_you.mp4',
     'ayubowan': 'assets/video/ayubowan.mp4',
     'ආයුබෝවන්': 'assets/video/ayubowan.mp4',
-    'how are you': 'assets/video/how_are_you.mp4',
-    'ඔබට කොහොමද': 'assets/video/how_are_you.mp4',
+    'how': 'assets/video/how_are_you.mp4',
+    'කොහොමද': 'assets/video/how_are_you.mp4',
     'alright': 'assets/video/alright.mp4',
     'හරි': 'assets/video/alright.mp4',
   };
@@ -36,64 +36,33 @@ class _TextToSignTranslateState extends State<TextToSignTranslate> {
 
   // ------------------ MAIN TRANSLATION -------------------
   void _startTranslation() {
-    // normalize input
-    String raw = _textEditingController.text.trim().toLowerCase();
+    final input = _textEditingController.text.trim().toLowerCase();
 
-    if (raw.isEmpty) {
+    if (input.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Please enter text.")),
       );
       return;
     }
 
-    // remove simple punctuation so 'how are you,' matches 'how are you'
-    String cleaned = raw.replaceAll(RegExp(r'[.,!?;:]'), ' ').trim();
-
-    // split into tokens (keeps Sinhala tokens too)
-    final tokens =
-        cleaned.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
-    if (tokens.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please enter text.")),
-      );
-      return;
-    }
-
-    // prepare
+    // Clear previous queue & saved sentence
     _videoQueue.clear();
     _savedQueue.clear();
 
-    // compute max phrase length in words (so we try longest matches first)
-    final maxPhraseWords = signMap.keys
-        .map((k) => k.split(RegExp(r'\s+')).length)
-        .reduce((a, b) => a > b ? a : b);
-
-    int i = 0;
-    while (i < tokens.length) {
-      bool matched = false;
-
-      // try to match longest phrase starting at i
-      for (int len = maxPhraseWords; len >= 1; len--) {
-        if (i + len > tokens.length) continue;
-
-        final phrase = tokens.sublist(i, i + len).join(' ');
-
-        if (signMap.containsKey(phrase)) {
-          // matched a phrase (multi-word or single)
-          _videoQueue.add(signMap[phrase]!);
-          i += len; // advance past matched words
-          matched = true;
-          break;
+    // PHRASE CHECK FIRST
+    if (signMap.containsKey(input)) {
+      _videoQueue.add(signMap[input]!);
+    } else {
+      // WORD BY WORD
+      final words = input.split(RegExp(r'\s+'));
+      for (var w in words) {
+        if (signMap.containsKey(w)) {
+          _videoQueue.add(signMap[w]!);
         }
-      }
-
-      if (!matched) {
-        // no match for any phrase starting here; skip this token
-        i++;
       }
     }
 
-    // save last queue (overwrite previous)
+    // Save sentence (overwrite previous)
     _savedQueue = List.from(_videoQueue);
 
     if (_videoQueue.isNotEmpty) {
