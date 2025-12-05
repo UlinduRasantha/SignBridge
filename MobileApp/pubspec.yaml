@@ -1,0 +1,54 @@
+name: fyp_project
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.6.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_localizations:
+    sdk: flutter
+  shared_preferences: ^2.0.15
+
+  google_fonts: ^6.2.1
+  go_router: ^14.8.1
+  camera: ^0.11.1
+  video_player: ^2.5.0
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.0.1
+  google_sign_in: ^6.2.0
+  cloud_firestore: ^5.0.1
+  get: ^4.7.2
+  tflite_flutter: ^0.11.0
+  google_mlkit_pose_detection: ^0.11.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true   # Enables localization code generation
+
+  assets:
+    # Videos
+    - assets/video/hello.mp4
+    - assets/video/thank_you.mp4
+    - assets/video/ayubowan.mp4
+    - assets/video/how_are_you.mp4
+    - assets/video/alright.mp4
+
+    # Images
+    - assets/images/google.png
+    - assets/images/AppLogo.jpeg
+    - assets/images/avata.jpeg
+
+    # Models
+    - assets/models/model.tflite
+
+
